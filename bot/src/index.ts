@@ -27,6 +27,17 @@ function getNextDayTmstmp() {
     return nextDay.getTime();
 }
 
+function checkNextDayAndReset(ctx: BotContext) {
+    // Check if it's the next day. If so, reset all emperors.
+    const currentDate = new Date();
+    if (currentDate.getTime() >= ctx.session.nextDayTmstmp) {
+        ctx.session.nextDayTmstmp = getNextDayTmstmp();
+        for (const [name] of Object.entries(ctx.session.emperors)) {
+            ctx.session.emperors[name]!.takenBy = undefined;
+        }
+    }
+}
+
 function getSessionKey(ctx: Context) {
     return ctx.chat?.id.toString();
 }
@@ -80,6 +91,9 @@ const groupActions = () => {
             return;
         }
         let text = ctx.t("list-emperors");
+
+        checkNextDayAndReset(ctx);
+
         text += "\n";
         for (const [name, emperor] of Object.entries(ctx.session.emperors)) {
             text += `${name} ${emperor?.takenBy != undefined ? "(👑)" : ""}\n`;
@@ -89,14 +103,8 @@ const groupActions = () => {
     groupTypes.on("message", async (ctx) => {
         const emperor = ctx.session.emperors[ctx.message.text!];
         if (emperor !== undefined) {
-            // Check if it's the next day. If so, reset all emperors.
-            const currentDate = new Date();
-            if (currentDate.getTime() >= ctx.session.nextDayTmstmp) {
-                ctx.session.nextDayTmstmp = getNextDayTmstmp();
-                for (const [name] of Object.entries(ctx.session.emperors)) {
-                    ctx.session.emperors[name]!.takenBy = undefined;
-                }
-            }
+            
+            checkNextDayAndReset(ctx);
             
             const name = ctx.message.text!;
             if (emperor.takenBy === ctx.from?.id) {
