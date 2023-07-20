@@ -1,0 +1,29 @@
+services:
+    api:
+        build:
+            context: ./image_server/
+            dockerfile: Dockerfile
+        container_name: image-server
+        stop_signal: SIGINT
+        restart: always
+        volumes: 
+            - ./image_server/:/app/emperors-bot/image_server
+        hostname: imageapi
+        ports: 
+            - 8000:8000
+        environment: 
+            PORT: 8000
+    bot:
+        depends_on:
+            - api
+        build:
+            context: ./bot/
+            dockerfile: Dockerfile
+        container_name: emperors-bot
+        stop_signal: SIGINT
+        restart: on-failure
+        volumes: 
+            - ./bot/sessions:/app/emperors-bot/bot/sessions
+            - ./bot/locales:/app/emperors-bot/bot/locales
+            - ./bot/cache:/app/emperors-bot/bot/cache
+        env_file: /bot/.env
