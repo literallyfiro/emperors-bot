@@ -4,3 +4,4 @@ bot/sessions
 bot/cache
 image_server/__pycache__/
 image_server/uploads
+.venv/
