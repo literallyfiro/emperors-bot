@@ -26,4 +26,4 @@ services:
             - ./bot/sessions:/app/emperors-bot/bot/sessions
             - ./bot/locales:/app/emperors-bot/bot/locales
             - ./bot/cache:/app/emperors-bot/bot/cache
-        env_file: /bot/.env
+        env_file: ./bot/.env
