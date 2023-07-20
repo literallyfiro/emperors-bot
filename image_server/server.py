@@ -1,9 +1,13 @@
 import os
 import uuid
 import base64
+import logging
 from flask import Flask, jsonify, request, send_file
 
 app = Flask(__name__)
+
+logger = logging.getLogger("waitress")
+logging.basicConfig(level=logging.INFO)
 
 # Directory to store the uploaded images
 UPLOAD_DIRECTORY = 'uploads'
@@ -21,8 +25,8 @@ def upload_image():
     image_path = os.path.join(UPLOAD_DIRECTORY, f'{image_id}.png')
     with open(image_path, 'wb') as image_file:
         image_file.write(image_bytes)
-    
-    print("Image uploaded successfully with id " + image_id + ".")
+
+    logger.info("Image uploaded successfully with id " + image_id + ".")
     return jsonify({'image_id': image_id}), 201
 
 
